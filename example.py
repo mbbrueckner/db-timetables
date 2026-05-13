@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from db_timetables import TimetablesClient, ArrivalDeparture, TimetableStop
+from src.db_timetables import TimetablesClient, ArrivalDeparture, TimetableStop
 
 load_dotenv()
 
