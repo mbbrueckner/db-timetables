@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
+_DB_TZ = ZoneInfo("Europe/Berlin")
 
 import requests
 
@@ -54,7 +57,7 @@ class TimetablesClient:
         Returns:
             Timetable with planned stops for the given hour.
         """
-        now = datetime.now()
+        now = datetime.now(_DB_TZ)
         date = date or now
         hour = hour if hour is not None else now.hour
         date_str = date.strftime("%y%m%d")
