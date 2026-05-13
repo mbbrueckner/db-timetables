@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from db_timetables import TimetablesClient
 from db_timetables.exceptions import (
@@ -50,35 +51,47 @@ class TestClientErrorHandling:
             assert exc.value.status_code == 429
 
     def test_500_raises_db_api_error(self, client):
-        with patch.object(client._session, "get", return_value=_make_response(500, b"Internal Server Error")):
+        with patch.object(
+            client._session, "get", return_value=_make_response(500, b"Internal Server Error")
+        ):
             with pytest.raises(DBApiError) as exc:
                 client.get_station("Frankfurt")
             assert exc.value.status_code == 500
 
     def test_connection_error_raises_db_api_error(self, client):
         import requests
-        with patch.object(client._session, "get", side_effect=requests.ConnectionError("unreachable")):
+
+        with patch.object(
+            client._session, "get", side_effect=requests.ConnectionError("unreachable")
+        ):
             with pytest.raises(DBApiError, match="Connection failed"):
                 client.get_station("Frankfurt")
 
     def test_timeout_raises_db_api_error(self, client):
         import requests
+
         with patch.object(client._session, "get", side_effect=requests.Timeout()):
             with pytest.raises(DBApiError, match="timed out"):
                 client.get_station("Frankfurt")
 
 
 class TestClientParsing:
-    _STATION_XML = b'<?xml version="1.0"?><stations><station eva="8000105" name="Frankfurt(Main)Hbf" ds100="FF" lat="50.1067" lon="8.6631"/></stations>'
+    _STATION_XML = (
+        b'<?xml version="1.0"?><stations>'
+        b'<station eva="8000105" name="Frankfurt(Main)Hbf" ds100="FF" lat="50.1067" lon="8.6631"/>'
+        b"</stations>"
+    )
     _PLAN_XML = (
         b'<?xml version="1.0"?>'
         b'<timetable station="Frankfurt(Main)Hbf" eva="8000105">'
         b'<s id="stop-1"><tl c="ICE" n="9551"/><dp pt="2605141430" pp="7"/></s>'
-        b'</timetable>'
+        b"</timetable>"
     )
 
     def test_get_station_returns_stations(self, client):
-        with patch.object(client._session, "get", return_value=_make_response(200, self._STATION_XML)):
+        with patch.object(
+            client._session, "get", return_value=_make_response(200, self._STATION_XML)
+        ):
             stations = client.get_station("Frankfurt")
         assert len(stations) == 1
         assert stations[0].eva == "8000105"
@@ -91,6 +104,8 @@ class TestClientParsing:
         assert len(plan.stops) == 1
 
     def test_invalid_xml_raises_db_api_error(self, client):
-        with patch.object(client._session, "get", return_value=_make_response(200, b"not xml at all")):
+        with patch.object(
+            client._session, "get", return_value=_make_response(200, b"not xml at all")
+        ):
             with pytest.raises(DBApiError, match="Failed to parse XML"):
                 client.get_station("Frankfurt")

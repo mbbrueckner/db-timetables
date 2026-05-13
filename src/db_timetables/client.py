@@ -4,14 +4,13 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-_DB_TZ = ZoneInfo("Europe/Berlin")
-
 import requests
 
 from .exceptions import AuthenticationError, DBApiError, NotFoundError, RateLimitError
 from .models import Station, Timetable
 
 BASE_URL = "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1"
+_DB_TZ = ZoneInfo("Europe/Berlin")
 
 
 class TimetablesClient:
@@ -33,7 +32,6 @@ class TimetablesClient:
         )
         self._timeout = timeout
 
-
     def get_station(self, pattern: str) -> list[Station]:
         """Search for stations by name pattern.
 
@@ -46,7 +44,9 @@ class TimetablesClient:
         root = self._get_xml(f"/station/{pattern}")
         return [Station.from_xml(el) for el in root.findall("station")]
 
-    def get_plan(self, eva: str, date: datetime | None = None, hour: int | None = None) -> Timetable:
+    def get_plan(
+        self, eva: str, date: datetime | None = None, hour: int | None = None
+    ) -> Timetable:
         """Fetch the planned timetable for a station at a given date and hour.
 
         Args:
@@ -117,7 +117,6 @@ class TimetablesClient:
         changes = self.get_full_changes(eva)
         plan.merge_changes(changes)
         return plan
-
 
     def _get(self, path: str) -> requests.Response:
         url = BASE_URL + path

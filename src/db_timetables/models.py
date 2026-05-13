@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-import xml.etree.ElementTree as ET
+from enum import StrEnum
 
 
-class MessageType(str, Enum):
-    HIM = "h"                   # HIM message (Hafas Information Manager)
+class MessageType(StrEnum):
+    HIM = "h"  # HIM message (Hafas Information Manager)
     QUALITY_CHANGE = "q"
     FREE = "f"
     CAUSE_OF_DELAY = "d"
@@ -17,26 +17,26 @@ class MessageType(str, Enum):
     CONNECTION = "c"
 
 
-class EventStatus(str, Enum):
+class EventStatus(StrEnum):
     PLANNED = "p"
     ADDED = "a"
     CANCELLED = "c"
 
 
-class ConnectionStatus(str, Enum):
+class ConnectionStatus(StrEnum):
     WAITING = "w"
     NO_WAIT = "n"
     ALTERNATIVE = "a"
 
 
-class DistributorType(str, Enum):
+class DistributorType(StrEnum):
     CITY = "s"
     REGION = "r"
     LONG_DISTANCE = "f"
     OTHER = "x"
 
 
-class DelaySource(str, Enum):
+class DelaySource(StrEnum):
     LEIBIT = "L"
     RISNE_AUTO = "NA"
     RISNE_MANUAL = "NM"
@@ -78,10 +78,11 @@ class Station:
 @dataclass
 class TrainLine:
     """Characterises a trip (tl element)."""
-    trip_type: str = ""     # t: p=planned, e=extra, z=?, s=?, h=?, n=?
-    category: str = ""      # c: ICE, IC, RE, S, etc.
-    number: str = ""        # n: train number
-    owner: str = ""         # o: operator EVU code
+
+    trip_type: str = ""  # t: p=planned, e=extra, z=?, s=?, h=?, n=?
+    category: str = ""  # c: ICE, IC, RE, S, etc.
+    number: str = ""  # n: train number
+    owner: str = ""  # o: operator EVU code
     filter_flags: str = ""  # f: filter flags
 
     @classmethod
@@ -104,9 +105,10 @@ class TrainLine:
 @dataclass
 class DistributorMessage:
     """Additional station-based disruption message from a specific distributor."""
-    name: str = ""          # n: distributor name
-    type: str = ""          # t: s=CITY, r=REGION, f=LONG_DISTANCE, x=OTHER
-    internal_text: str = "" # int
+
+    name: str = ""  # n: distributor name
+    type: str = ""  # t: s=CITY, r=REGION, f=LONG_DISTANCE, x=OTHER
+    internal_text: str = ""  # int
     timestamp: datetime | None = None
 
     @classmethod
@@ -122,21 +124,22 @@ class DistributorMessage:
 @dataclass
 class Message:
     """A message associated with an event, stop, or trip."""
+
     id: str = ""
-    type: str = ""              # t: h, q, f, d, i, u, r, c
+    type: str = ""  # t: h, q, f, d, i, u, r, c
     timestamp: datetime | None = None
-    code: int | None = None     # c: numeric code
-    category: str = ""          # cat
-    external_category: str = "" # ec
-    external_text: str = ""     # ext
-    internal_text: str = ""     # int
-    external_link: str = ""     # elnk
-    owner: str = ""             # o
-    priority: str = ""          # pr: 1=HIGH, 2=MEDIUM, 3=LOW, 4=DONE
-    deleted: bool = False       # del: 1 if deleted
+    code: int | None = None  # c: numeric code
+    category: str = ""  # cat
+    external_category: str = ""  # ec
+    external_text: str = ""  # ext
+    internal_text: str = ""  # int
+    external_link: str = ""  # elnk
+    owner: str = ""  # o
+    priority: str = ""  # pr: 1=HIGH, 2=MEDIUM, 3=LOW, 4=DONE
+    deleted: bool = False  # del: 1 if deleted
     valid_from: datetime | None = None  # from
-    valid_to: datetime | None = None    # to
-    trip_labels: list[TrainLine] = field(default_factory=list)      # tl
+    valid_to: datetime | None = None  # to
+    trip_labels: list[TrainLine] = field(default_factory=list)  # tl
     distributor_messages: list[DistributorMessage] = field(default_factory=list)  # dm
 
     @classmethod
@@ -169,22 +172,23 @@ class Message:
 @dataclass
 class ArrivalDeparture:
     """An arrival or departure event at a stop (ar / dp element)."""
-    planned_time: datetime | None = None        # pt
-    changed_time: datetime | None = None        # ct
-    planned_platform: str = ""                  # pp
-    changed_platform: str = ""                  # cp
-    planned_path: list[str] = field(default_factory=list)   # ppth (pipe-separated)
-    changed_path: list[str] = field(default_factory=list)   # cpth
+
+    planned_time: datetime | None = None  # pt
+    changed_time: datetime | None = None  # ct
+    planned_platform: str = ""  # pp
+    changed_platform: str = ""  # cp
+    planned_path: list[str] = field(default_factory=list)  # ppth (pipe-separated)
+    changed_path: list[str] = field(default_factory=list)  # cpth
     planned_status: EventStatus | None = None
     changed_status: EventStatus | None = None
-    cancellation_time: datetime | None = None   # clt
-    line: str = ""                              # l: line indicator (e.g. "3" for S3)
-    planned_distant_endpoint: str = ""          # pde
-    changed_distant_endpoint: str = ""          # cde
-    distant_change: int | None = None           # dc
-    hidden: bool = False                        # hi: 1 = don't show boarding/alighting
-    transition: str = ""                        # tra: trip id of connecting trip
-    wings: str = ""                             # wings: pipe-separated trip ids
+    cancellation_time: datetime | None = None  # clt
+    line: str = ""  # l: line indicator (e.g. "3" for S3)
+    planned_distant_endpoint: str = ""  # pde
+    changed_distant_endpoint: str = ""  # cde
+    distant_change: int | None = None  # dc
+    hidden: bool = False  # hi: 1 = don't show boarding/alighting
+    transition: str = ""  # tra: trip id of connecting trip
+    wings: str = ""  # wings: pipe-separated trip ids
     messages: list[Message] = field(default_factory=list)
 
     @classmethod
@@ -226,7 +230,10 @@ class ArrivalDeparture:
 
     @property
     def is_cancelled(self) -> bool:
-        return self.changed_status == EventStatus.CANCELLED or self.planned_status == EventStatus.CANCELLED
+        return (
+            self.changed_status == EventStatus.CANCELLED
+            or self.planned_status == EventStatus.CANCELLED
+        )
 
     @property
     def delay_minutes(self) -> int | None:
@@ -238,11 +245,12 @@ class ArrivalDeparture:
 @dataclass
 class HistoricDelay:
     """One entry in the delay history of a stop."""
-    arrival_time: datetime | None = None    # ar
+
+    arrival_time: datetime | None = None  # ar
     departure_time: datetime | None = None  # dp
-    source: str = ""                        # src
-    cause: str = ""                         # cod
-    timestamp: datetime | None = None       # ts
+    source: str = ""  # src
+    cause: str = ""  # cod
+    timestamp: datetime | None = None  # ts
 
     @classmethod
     def from_xml(cls, element: ET.Element) -> HistoricDelay:
@@ -258,9 +266,10 @@ class HistoricDelay:
 @dataclass
 class HistoricPlatformChange:
     """One entry in the platform-change history of a stop."""
-    arrival_platform: str = ""      # ar
-    departure_platform: str = ""    # dp
-    cause: str = ""                 # cot
+
+    arrival_platform: str = ""  # ar
+    departure_platform: str = ""  # dp
+    cause: str = ""  # cot
     timestamp: datetime | None = None
 
     @classmethod
@@ -276,8 +285,9 @@ class HistoricPlatformChange:
 @dataclass
 class Connection:
     """Information about a connecting train at a stop."""
+
     id: str = ""
-    status: str = ""            # cs: w=WAITING, n=NO_WAIT, a=ALTERNATIVE
+    status: str = ""  # cs: w=WAITING, n=NO_WAIT, a=ALTERNATIVE
     eva: str = ""
     timestamp: datetime | None = None
 
@@ -294,6 +304,7 @@ class Connection:
 @dataclass
 class TimetableStop:
     """A single train stop within a timetable."""
+
     id: str
     eva: str = ""
     train_line: TrainLine | None = None
@@ -315,7 +326,9 @@ class TimetableStop:
             messages=[Message.from_xml(m) for m in element.findall("m")],
             connections=[Connection.from_xml(c) for c in element.findall("conn")],
             historic_delays=[HistoricDelay.from_xml(h) for h in element.findall("hd")],
-            historic_platform_changes=[HistoricPlatformChange.from_xml(h) for h in element.findall("hpc")],
+            historic_platform_changes=[
+                HistoricPlatformChange.from_xml(h) for h in element.findall("hpc")
+            ],
         )
 
     @property
@@ -372,10 +385,7 @@ class Timetable:
             eva=root.get("eva", ""),
             messages=[Message.from_xml(m) for m in root.findall("m")],
         )
-        timetable.stops = [
-            TimetableStop.from_xml(s, timetable.eva)
-            for s in root.findall("s")
-        ]
+        timetable.stops = [TimetableStop.from_xml(s, timetable.eva) for s in root.findall("s")]
         return timetable
 
     def merge_changes(self, changes: Timetable) -> None:

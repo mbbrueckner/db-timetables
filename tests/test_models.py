@@ -1,16 +1,11 @@
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from zoneinfo import ZoneInfo
 
 import pytest
 
 from db_timetables.models import (
     ArrivalDeparture,
-    Connection,
-    DistributorMessage,
     EventStatus,
-    HistoricDelay,
-    HistoricPlatformChange,
     Message,
     Station,
     Timetable,
@@ -22,7 +17,9 @@ from db_timetables.models import (
 # Station
 class TestStation:
     def test_from_xml(self):
-        el = ET.fromstring('<station eva="8000105" name="Frankfurt(Main)Hbf" ds100="FF" lat="50.1067" lon="8.6631"/>')
+        el = ET.fromstring(
+            '<station eva="8000105" name="Frankfurt(Main)Hbf" ds100="FF" lat="50.1067" lon="8.6631"/>'
+        )
         s = Station.from_xml(el)
         assert s.eva == "8000105"
         assert s.name == "Frankfurt(Main)Hbf"
@@ -57,6 +54,7 @@ class TestTrainLine:
 
 
 # ArrivalDeparture
+
 
 class TestArrivalDeparture:
     def _make(self, xml: str) -> ArrivalDeparture:
@@ -127,7 +125,9 @@ class TestArrivalDeparture:
 # Message
 class TestMessage:
     def test_from_xml_basic(self):
-        el = ET.fromstring('<m id="1" t="d" ts="2605141200" c="42" ext="Delay due to track works" int="internal note"/>')
+        el = ET.fromstring(
+            '<m id="1" t="d" ts="2605141200" c="42" ext="Delay due to track works" int="internal note"/>'
+        )
         m = Message.from_xml(el)
         assert m.id == "1"
         assert m.code == 42
@@ -158,8 +158,8 @@ class TestTimetableStop:
             f'<tl t="p" c="ICE" n="9551" o="80"/>'
             f'<dp pt="2605141430" pp="7"/>'
             f'<ar pt="2605141425" pp="7"/>'
-            f'{extra}'
-            f'</s>'
+            f"{extra}"
+            f"</s>"
         )
 
     def test_basic_parsing(self):
@@ -173,21 +173,14 @@ class TestTimetableStop:
         assert stop.is_cancelled is False
 
     def test_is_cancelled_true(self):
-        el = ET.fromstring(
-            '<s id="abc">'
-            '<tl c="RE" n="1"/>'
-            '<dp pt="2605141430" cs="c"/>'
-            '</s>'
-        )
+        el = ET.fromstring('<s id="abc"><tl c="RE" n="1"/><dp pt="2605141430" cs="c"/></s>')
         stop = TimetableStop.from_xml(el)
         assert stop.is_cancelled is True
 
     def test_merge_changes_delay(self):
         planned = TimetableStop.from_xml(self._stop_xml())
         changed_el = ET.fromstring(
-            '<s id="1234567890123456789-2605141430-5">'
-            '<dp ct="2605141450" cp="8"/>'
-            '</s>'
+            '<s id="1234567890123456789-2605141430-5"><dp ct="2605141450" cp="8"/></s>'
         )
         changed = TimetableStop.from_xml(changed_el)
         planned.merge_changes(changed)
@@ -197,11 +190,7 @@ class TestTimetableStop:
 
     def test_merge_changes_cancellation(self):
         planned = TimetableStop.from_xml(self._stop_xml())
-        changed_el = ET.fromstring(
-            '<s id="1234567890123456789-2605141430-5">'
-            '<dp cs="c"/>'
-            '</s>'
-        )
+        changed_el = ET.fromstring('<s id="1234567890123456789-2605141430-5"><dp cs="c"/></s>')
         planned.merge_changes(TimetableStop.from_xml(changed_el))
         assert planned.is_cancelled is True
 
@@ -213,7 +202,7 @@ class TestTimetable:
             '<timetable station="Frankfurt(Main)Hbf" eva="8000105">'
             '<s id="stop-1"><tl c="ICE" n="9551"/><dp pt="2605141430" pp="7"/></s>'
             '<s id="stop-2"><tl c="RE" n="1"/><dp pt="2605141445" pp="3"/></s>'
-            '</timetable>'
+            "</timetable>"
         )
 
     def test_from_xml(self):
@@ -227,7 +216,7 @@ class TestTimetable:
         changes_xml = (
             '<timetable station="Frankfurt(Main)Hbf" eva="8000105">'
             '<s id="stop-1"><dp ct="2605141445"/></s>'
-            '</timetable>'
+            "</timetable>"
         )
         tt.merge_changes(Timetable.from_xml(ET.fromstring(changes_xml)))
         stop = next(s for s in tt.stops if s.id == "stop-1")
@@ -238,7 +227,7 @@ class TestTimetable:
         changes_xml = (
             '<timetable station="Frankfurt(Main)Hbf" eva="8000105">'
             '<s id="stop-99"><tl c="S" n="1"/><dp pt="2605141500"/></s>'
-            '</timetable>'
+            "</timetable>"
         )
         tt.merge_changes(Timetable.from_xml(ET.fromstring(changes_xml)))
         assert len(tt.stops) == 3

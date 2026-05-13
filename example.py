@@ -1,7 +1,8 @@
 import os
+
 from dotenv import load_dotenv
 
-from db_timetables import TimetablesClient, ArrivalDeparture, TimetableStop
+from db_timetables import ArrivalDeparture, TimetablesClient, TimetableStop
 
 load_dotenv()
 
@@ -28,7 +29,7 @@ def train_name(stop: TimetableStop) -> str:
     return f"{tl.category} {tl.number}".strip() if tl.number else tl.category
 
 
-#  Station search 
+#  Station search
 print("### Station search: Frankfurt ###")
 stations = client.get_station("Frankfurt")
 for s in stations[:5]:
@@ -41,7 +42,7 @@ if not stations:
 eva = stations[0].eva
 print(f"\nUsing station: {stations[0].name} ({eva})\n")
 
-#  Planned timetable for current hour 
+#  Planned timetable for current hour
 print("### Planned timetable (current hour) ###")
 plan = client.get_plan(eva)
 print(f"  Station: {plan.station}, {len(plan.stops)} stops")
@@ -51,11 +52,12 @@ for stop in plan.stops[:5]:
     platform = event.effective_platform if event else "?"
     print(f"  {train_name(stop):12}  planned={pt}  platform={platform}")
 
-#  Timetable with live changes merged in 
-print(f"\n### Timetable with live changes ###")
+#  Timetable with live changes merged in
+print("\n### Timetable with live changes ###")
 live = client.get_timetable_with_changes(eva)
 delayed = [
-    s for s in live.stops
+    s
+    for s in live.stops
     if s.departure and s.departure.delay_minutes and s.departure.delay_minutes > 0
 ]
 cancelled = [s for s in live.stops if s.is_cancelled]
@@ -66,11 +68,7 @@ print(f"  Cancelled   : {len(cancelled)}")
 print()
 for stop in delayed[:5]:
     dp = stop.departure
-    print(
-        f"  {train_name(stop):12}  "
-        f"+{dp.delay_minutes} min  "
-        f"platform={dp.effective_platform}"
-    )
+    print(f"  {train_name(stop):12}  +{dp.delay_minutes} min  platform={dp.effective_platform}")
 
 for stop in cancelled[:5]:
     event = stop.departure or stop.arrival
