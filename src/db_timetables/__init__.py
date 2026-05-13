@@ -1,3 +1,7 @@
+from importlib.metadata import version
+
+__version__ = version("db-timetables")
+
 from .client import TimetablesClient
 from .models import (
     Station,
@@ -24,6 +28,7 @@ from .exceptions import (
 )
 
 __all__ = [
+    "__version__",
     "TimetablesClient",
     "Station",
     "Timetable",
