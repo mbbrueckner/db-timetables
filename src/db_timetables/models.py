@@ -157,7 +157,7 @@ class Message:
             deleted=element.get("del", "0") == "1",
             valid_from=_parse_db_time(element.get("from")),
             valid_to=_parse_db_time(element.get("to")),
-            trip_labels=[TrainLine.from_xml(tl) for tl in element.findall("tl") if TrainLine.from_xml(tl)],
+            trip_labels=[t for tl in element.findall("tl") if (t := TrainLine.from_xml(tl))],
             distributor_messages=[DistributorMessage.from_xml(dm) for dm in element.findall("dm")],
         )
 
@@ -175,8 +175,8 @@ class ArrivalDeparture:
     changed_platform: str = ""                  # cp
     planned_path: list[str] = field(default_factory=list)   # ppth (pipe-separated)
     changed_path: list[str] = field(default_factory=list)   # cpth
-    planned_status: str = ""                    # ps: p, a, c
-    changed_status: str = ""                    # cs: p, a, c
+    planned_status: EventStatus | None = None
+    changed_status: EventStatus | None = None
     cancellation_time: datetime | None = None   # clt
     line: str = ""                              # l: line indicator (e.g. "3" for S3)
     planned_distant_endpoint: str = ""          # pde
@@ -203,8 +203,8 @@ class ArrivalDeparture:
             changed_platform=element.get("cp", ""),
             planned_path=split_path(element.get("ppth")),
             changed_path=split_path(element.get("cpth")),
-            planned_status=element.get("ps", ""),
-            changed_status=element.get("cs", ""),
+            planned_status=EventStatus(element.get("ps")) if element.get("ps") else None,
+            changed_status=EventStatus(element.get("cs")) if element.get("cs") else None,
             cancellation_time=_parse_db_time(element.get("clt")),
             line=element.get("l", ""),
             planned_distant_endpoint=element.get("pde", ""),
