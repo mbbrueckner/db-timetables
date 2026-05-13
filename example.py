@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from src.db_timetables import TimetablesClient, ArrivalDeparture, TimetableStop
+from db_timetables import TimetablesClient, ArrivalDeparture, TimetableStop
 
 load_dotenv()
 
@@ -30,7 +30,7 @@ def train_name(stop: TimetableStop) -> str:
 
 #  Station search 
 print("### Station search: Frankfurt ###")
-stations = client.get_station("Jena Frankfurt")
+stations = client.get_station("Frankfurt")
 for s in stations[:5]:
     print(f"  {s.name} (EVA {s.eva})")
 
