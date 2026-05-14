@@ -27,7 +27,7 @@ pip install db-timetables
 ## Usage
 
 ```python
-from src.db_timetables import TimetablesClient
+from db_timetables import TimetablesClient
 
 client = TimetablesClient(
     client_id="your_client_id",
@@ -141,7 +141,7 @@ recent = client.get_recent_changes(eva)
 | `DBApiError` | Any other API or network error |
 
 ```python
-from src.db_timetables import TimetablesClient, RateLimitError, NotFoundError
+from db_timetables import TimetablesClient, RateLimitError, NotFoundError
 
 try:
     stations = client.get_station("München")
