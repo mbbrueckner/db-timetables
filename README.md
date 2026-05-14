@@ -1,4 +1,4 @@
-# db_timetables
+# db-timetables
 
 A Python library for the [Deutsche Bahn Timetables API](https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables).
 
