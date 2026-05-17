@@ -10,13 +10,13 @@ A Python library for the Deutsche Bahn APIs — currently supporting the [Timeta
 ## Installation
 
 ```bash
-uv add deutsche-bahn
+uv add dbapi-python
 ```
 
 Or with pip:
 
 ```bash
-pip install deutsche-bahn
+pip install dbapi-python
 ```
 
 ## Setup

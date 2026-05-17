@@ -78,7 +78,7 @@ wheels = [
 ]
 
 [[package]]
-name = "deutsche-bahn"
+name = "dbapi-python"
 version = "0.2.0"
 source = { editable = "." }
 dependencies = [
@@ -87,7 +87,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "deutsche-bahn" },
+    { name = "dbapi-python" },
     { name = "pytest" },
     { name = "pytest-mock" },
     { name = "python-dotenv" },
@@ -99,7 +99,7 @@ requires-dist = [{ name = "requests", specifier = ">=2.34.0" }]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "deutsche-bahn" },
+    { name = "dbapi-python" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "pytest-mock", specifier = ">=3.15.1" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
