@@ -2,8 +2,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from db_timetables import TimetablesClient
-from db_timetables.exceptions import (
+from deutsche_bahn.timetables import TimetablesClient
+from deutsche_bahn.timetables.exceptions import (
     AuthenticationError,
     DBApiError,
     NotFoundError,

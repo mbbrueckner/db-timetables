@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytest
 
-from db_timetables.models import (
+from deutsche_bahn.timetables.models import (
     ArrivalDeparture,
     EventStatus,
     Message,
