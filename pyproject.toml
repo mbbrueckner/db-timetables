@@ -1,6 +1,6 @@
 [project]
 name = "deutsche-bahn-py"
-version = "0.2.1"
+version = "0.2.2"
 description = "Python clients for the Deutsche Bahn APIs (Timetables, StaDa Station Data)"
 readme = "README.md"
 requires-python = ">=3.13"
