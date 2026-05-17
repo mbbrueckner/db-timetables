@@ -23,7 +23,9 @@ from deutsche_bahn.stada.models import (
 
 class TestAddress:
     def test_from_dict(self):
-        a = Address.from_dict({"city": "Frankfurt", "houseNumber": "1", "street": "Bahnhofstr.", "zipcode": "60329"})
+        a = Address.from_dict(
+            {"city": "Frankfurt", "houseNumber": "1", "street": "Bahnhofstr.", "zipcode": "60329"}
+        )
         assert a.city == "Frankfurt"
         assert a.house_number == "1"
         assert a.street == "Bahnhofstr."
@@ -61,10 +63,12 @@ class TestOpeningHours:
 
 class TestDaySchedule:
     def test_from_dict_with_days(self):
-        ds = DaySchedule.from_dict({
-            "monday": {"fromTime": "07:00", "toTime": "22:00"},
-            "saturday": {"fromTime": "08:00", "toTime": "20:00"},
-        })
+        ds = DaySchedule.from_dict(
+            {
+                "monday": {"fromTime": "07:00", "toTime": "22:00"},
+                "saturday": {"fromTime": "08:00", "toTime": "20:00"},
+            }
+        )
         assert ds.monday is not None
         assert ds.monday.from_time == "07:00"
         assert ds.saturday is not None
@@ -75,16 +79,27 @@ class TestDaySchedule:
 
     def test_from_dict_all_none(self):
         ds = DaySchedule.from_dict({})
-        for day in ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "holiday"):
+        for day in (
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+            "holiday",
+        ):
             assert getattr(ds, day) is None
 
 
 class TestDoubleSchedule:
     def test_from_dict(self):
-        ds = DoubleSchedule.from_dict({
-            "monday1": {"fromTime": "07:00", "toTime": "13:00"},
-            "monday2": {"fromTime": "14:00", "toTime": "20:00"},
-        })
+        ds = DoubleSchedule.from_dict(
+            {
+                "monday1": {"fromTime": "07:00", "toTime": "13:00"},
+                "monday2": {"fromTime": "14:00", "toTime": "20:00"},
+            }
+        )
         assert ds.monday1 is not None
         assert ds.monday1.from_time == "07:00"
         assert ds.monday2 is not None
@@ -99,7 +114,9 @@ class TestDoubleSchedule:
 
 class TestSchedule:
     def test_from_dict_with_availability(self):
-        s = Schedule.from_dict({"availability": {"monday": {"fromTime": "07:00", "toTime": "22:00"}}})
+        s = Schedule.from_dict(
+            {"availability": {"monday": {"fromTime": "07:00", "toTime": "22:00"}}}
+        )
         assert s.availability is not None
         assert s.availability.monday is not None
         assert s.availability.monday.from_time == "07:00"
@@ -111,11 +128,13 @@ class TestSchedule:
 
 class TestEVANumber:
     def test_from_dict_full(self):
-        e = EVANumber.from_dict({
-            "number": 8000105,
-            "isMain": True,
-            "geographicCoordinates": {"type": "Point", "coordinates": [8.6631, 50.1067]},
-        })
+        e = EVANumber.from_dict(
+            {
+                "number": 8000105,
+                "isMain": True,
+                "geographicCoordinates": {"type": "Point", "coordinates": [8.6631, 50.1067]},
+            }
+        )
         assert e.number == 8000105
         assert e.is_main is True
         assert e.geographic_coordinates is not None
@@ -133,13 +152,15 @@ class TestEVANumber:
 
 class TestRiL100Identifier:
     def test_from_dict_full(self):
-        r = RiL100Identifier.from_dict({
-            "rilIdentifier": "FF",
-            "isMain": True,
-            "primaryLocationCode": "DE12345",
-            "steamPermission": "no",
-            "geographicCoordinates": {"type": "Point", "coordinates": [8.6631, 50.1067]},
-        })
+        r = RiL100Identifier.from_dict(
+            {
+                "rilIdentifier": "FF",
+                "isMain": True,
+                "primaryLocationCode": "DE12345",
+                "steamPermission": "no",
+                "geographicCoordinates": {"type": "Point", "coordinates": [8.6631, 50.1067]},
+            }
+        )
         assert r.ril_identifier == "FF"
         assert r.is_main is True
         assert r.primary_location_code == "DE12345"
@@ -182,7 +203,9 @@ class TestTimetableOffice:
 
 class TestWirelessLan:
     def test_from_dict(self):
-        wl = WirelessLan.from_dict({"amount": 10, "installDate": "2015-01-01", "product": "DB WiFi"})
+        wl = WirelessLan.from_dict(
+            {"amount": 10, "installDate": "2015-01-01", "product": "DB WiFi"}
+        )
         assert wl.amount == 10
         assert wl.install_date == "2015-01-01"
         assert wl.product == "DB WiFi"
@@ -190,15 +213,17 @@ class TestWirelessLan:
 
 class TestMobilityServiceStaff:
     def test_from_dict_full(self):
-        ms = MobilityServiceStaff.from_dict({
-            "meetingPoint": "Haupteingang",
-            "serviceOnBehalf": True,
-            "staffOnSite": True,
-            "availability": {
-                "monday1": {"fromTime": "07:00", "toTime": "13:00"},
-                "monday2": {"fromTime": "14:00", "toTime": "20:00"},
-            },
-        })
+        ms = MobilityServiceStaff.from_dict(
+            {
+                "meetingPoint": "Haupteingang",
+                "serviceOnBehalf": True,
+                "staffOnSite": True,
+                "availability": {
+                    "monday1": {"fromTime": "07:00", "toTime": "13:00"},
+                    "monday2": {"fromTime": "14:00", "toTime": "20:00"},
+                },
+            }
+        )
         assert ms.meeting_point == "Haupteingang"
         assert ms.service_on_behalf is True
         assert ms.staff_on_site is True
@@ -212,7 +237,9 @@ class TestMobilityServiceStaff:
 
 class TestLocalizedNames:
     def test_from_dict(self):
-        ln = LocalizedNames.from_dict({"dan": "Flensborg", "dsb": "", "frr": "", "hsb": "", "nds": ""})
+        ln = LocalizedNames.from_dict(
+            {"dan": "Flensborg", "dsb": "", "frr": "", "hsb": "", "nds": ""}
+        )
         assert ln.dan == "Flensborg"
         assert ln.dsb == ""
 
@@ -224,17 +251,24 @@ class TestLocalizedNames:
 
 class TestSZentrale:
     def test_from_dict_full(self):
-        sz = SZentrale.from_dict({
-            "number": 50,
-            "name": "Frankfurt 3-S-Zentrale",
-            "publicPhoneNumber": "069 130 12345",
-            "publicFaxNumber": "069 130 12346",
-            "internalPhoneNumber": "12345",
-            "internalFaxNumber": "12346",
-            "mobilePhoneNumber": "0170 12345",
-            "email": "3sz@db.com",
-            "address": {"city": "Frankfurt", "houseNumber": "1", "street": "Bahnhofstr.", "zipcode": "60329"},
-        })
+        sz = SZentrale.from_dict(
+            {
+                "number": 50,
+                "name": "Frankfurt 3-S-Zentrale",
+                "publicPhoneNumber": "069 130 12345",
+                "publicFaxNumber": "069 130 12346",
+                "internalPhoneNumber": "12345",
+                "internalFaxNumber": "12346",
+                "mobilePhoneNumber": "0170 12345",
+                "email": "3sz@db.com",
+                "address": {
+                    "city": "Frankfurt",
+                    "houseNumber": "1",
+                    "street": "Bahnhofstr.",
+                    "zipcode": "60329",
+                },
+            }
+        )
         assert sz.number == 50
         assert sz.name == "Frankfurt 3-S-Zentrale"
         assert sz.public_phone_number == "069 130 12345"
@@ -274,12 +308,26 @@ class TestStadaStation:
         "hasSteplessAccess": "yes",
         "hasMobilityService": "partial",
         "evaNumbers": [
-            {"number": 8000105, "isMain": True, "geographicCoordinates": {"type": "Point", "coordinates": [8.6631, 50.1067]}}
+            {
+                "number": 8000105,
+                "isMain": True,
+                "geographicCoordinates": {"type": "Point", "coordinates": [8.6631, 50.1067]},
+            }
         ],
         "ril100Identifiers": [
-            {"rilIdentifier": "FF", "isMain": True, "primaryLocationCode": "DE12345", "steamPermission": "no"}
+            {
+                "rilIdentifier": "FF",
+                "isMain": True,
+                "primaryLocationCode": "DE12345",
+                "steamPermission": "no",
+            }
         ],
-        "mailingAddress": {"city": "Frankfurt", "houseNumber": "1", "street": "Bahnhofstr.", "zipcode": "60329"},
+        "mailingAddress": {
+            "city": "Frankfurt",
+            "houseNumber": "1",
+            "street": "Bahnhofstr.",
+            "zipcode": "60329",
+        },
         "regionalbereich": {"name": "Mitte", "number": 3, "shortName": "Mi"},
         "stationManagement": {"name": "Frankfurt", "number": 123},
         "szentrale": {"number": 50, "name": "3-S-Zentrale Frankfurt"},
@@ -404,15 +452,17 @@ class TestStadaStation:
 
 class TestStationQuery:
     def test_from_dict(self):
-        q = StationQuery.from_dict({
-            "total": 2,
-            "offset": 0,
-            "limit": 10,
-            "result": [
-                {"number": 1, "name": "Bahnhof A"},
-                {"number": 2, "name": "Bahnhof B"},
-            ],
-        })
+        q = StationQuery.from_dict(
+            {
+                "total": 2,
+                "offset": 0,
+                "limit": 10,
+                "result": [
+                    {"number": 1, "name": "Bahnhof A"},
+                    {"number": 2, "name": "Bahnhof B"},
+                ],
+            }
+        )
         assert q.total == 2
         assert q.offset == 0
         assert q.limit == 10
@@ -432,12 +482,14 @@ class TestStationQuery:
 
 class TestSZentraleQuery:
     def test_from_dict(self):
-        q = SZentraleQuery.from_dict({
-            "total": 1,
-            "offset": 0,
-            "limit": 10,
-            "result": [{"number": 50, "name": "Frankfurt 3-S-Zentrale"}],
-        })
+        q = SZentraleQuery.from_dict(
+            {
+                "total": 1,
+                "offset": 0,
+                "limit": 10,
+                "result": [{"number": 50, "name": "Frankfurt 3-S-Zentrale"}],
+            }
+        )
         assert q.total == 1
         assert len(q.result) == 1
         assert q.result[0].number == 50

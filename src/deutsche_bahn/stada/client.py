@@ -94,9 +94,7 @@ class StaDaClient:
         Returns:
             SZentraleQuery with all matching 3-S-Zentralen.
         """
-        params = {
-            k: v for k, v in {"offset": offset, "limit": limit}.items() if v is not None
-        }
+        params = {k: v for k, v in {"offset": offset, "limit": limit}.items() if v is not None}
         return SZentraleQuery.from_dict(self._get_json("/szentralen", params or None))
 
     def get_szentrale(self, szentrale_id: int) -> SZentraleQuery:

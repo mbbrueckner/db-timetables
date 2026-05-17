@@ -372,7 +372,9 @@ class StadaStation:
             has_stepless_access=d.get("hasSteplessAccess", ""),
             has_mobility_service=d.get("hasMobilityService", ""),
             eva_numbers=[EVANumber.from_dict(e) for e in d.get("evaNumbers", [])],
-            ril100_identifiers=[RiL100Identifier.from_dict(r) for r in d.get("ril100Identifiers", [])],
+            ril100_identifiers=[
+                RiL100Identifier.from_dict(r) for r in d.get("ril100Identifiers", [])
+            ],
             mailing_address=Address.from_dict(ma) if ma else None,
             regional_bereich=RegionalBereich.from_dict(rb) if rb else None,
             station_management=StationManagement.from_dict(sm) if sm else None,

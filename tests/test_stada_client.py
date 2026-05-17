@@ -71,7 +71,12 @@ _STATION_DICT = {
             "geographicCoordinates": {"type": "Point", "coordinates": [8.6631, 50.1067]},
         }
     ],
-    "mailingAddress": {"city": "Frankfurt", "houseNumber": "1", "street": "Am Hauptbahnhof", "zipcode": "60329"},
+    "mailingAddress": {
+        "city": "Frankfurt",
+        "houseNumber": "1",
+        "street": "Am Hauptbahnhof",
+        "zipcode": "60329",
+    },
     "regionalbereich": {"name": "Mitte", "number": 3, "shortName": "Mi"},
     "stationManagement": {"name": "Frankfurt", "number": 123},
     "szentrale": {
@@ -83,7 +88,12 @@ _STATION_DICT = {
         "internalFaxNumber": "",
         "mobilePhoneNumber": "",
         "email": "3sz-frankfurt@deutschebahn.com",
-        "address": {"city": "Frankfurt", "houseNumber": "1", "street": "Am Hauptbahnhof", "zipcode": "60329"},
+        "address": {
+            "city": "Frankfurt",
+            "houseNumber": "1",
+            "street": "Am Hauptbahnhof",
+            "zipcode": "60329",
+        },
     },
     "aufgabentraeger": {"name": "Rhein-Main-Verkehrsverbund", "shortName": "RMV"},
     "timeTableOffice": {"name": "Frankfurt", "email": "tf-frankfurt@deutschebahn.com"},
@@ -94,7 +104,10 @@ _STATION_DICT = {
         "meetingPoint": "Haupteingang",
         "serviceOnBehalf": True,
         "staffOnSite": True,
-        "availability": {"monday1": {"fromTime": "07:00", "toTime": "13:00"}, "monday2": {"fromTime": "14:00", "toTime": "20:00"}},
+        "availability": {
+            "monday1": {"fromTime": "07:00", "toTime": "13:00"},
+            "monday2": {"fromTime": "14:00", "toTime": "20:00"},
+        },
     },
     "localizedNames": {"dan": "", "dsb": "", "frr": "", "hsb": "", "nds": ""},
 }
@@ -110,7 +123,12 @@ _SZENTRALE_DICT = {
     "internalFaxNumber": "",
     "mobilePhoneNumber": "",
     "email": "3sz-frankfurt@deutschebahn.com",
-    "address": {"city": "Frankfurt", "houseNumber": "1", "street": "Am Hauptbahnhof", "zipcode": "60329"},
+    "address": {
+        "city": "Frankfurt",
+        "houseNumber": "1",
+        "street": "Am Hauptbahnhof",
+        "zipcode": "60329",
+    },
 }
 
 _SZENTRALE_QUERY = {"total": 1, "offset": 0, "limit": 10, "result": [_SZENTRALE_DICT]}
@@ -148,7 +166,9 @@ class TestStaDaClientErrorHandling:
             assert exc.value.status_code == 500
 
     def test_connection_error_raises_db_api_error(self, client):
-        with patch.object(client._session, "get", side_effect=requests.ConnectionError("unreachable")):
+        with patch.object(
+            client._session, "get", side_effect=requests.ConnectionError("unreachable")
+        ):
             with pytest.raises(DBApiError, match="Connection failed"):
                 client.get_stations()
 
@@ -242,7 +262,9 @@ class TestStaDaClientParsing:
         assert result.result == []
 
     def test_get_szentralen_returns_query(self, client):
-        with patch.object(client._session, "get", return_value=_make_response(200, _SZENTRALE_QUERY)):
+        with patch.object(
+            client._session, "get", return_value=_make_response(200, _SZENTRALE_QUERY)
+        ):
             result = client.get_szentralen()
         assert result.total == 1
         assert len(result.result) == 1
@@ -254,13 +276,19 @@ class TestStaDaClientParsing:
         assert sz.address.city == "Frankfurt"
 
     def test_get_szentrale_by_id(self, client):
-        with patch.object(client._session, "get", return_value=_make_response(200, _SZENTRALE_QUERY)):
+        with patch.object(
+            client._session, "get", return_value=_make_response(200, _SZENTRALE_QUERY)
+        ):
             result = client.get_szentrale(50)
         assert result.result[0].number == 50
 
     def test_get_stations_passes_filter_params(self, client):
-        with patch.object(client._session, "get", return_value=_make_response(200, _STATION_QUERY)) as mock_get:
-            client.get_stations(searchstring="Frankfurt", category="1-3", federalstate="hessen", limit=5)
+        with patch.object(
+            client._session, "get", return_value=_make_response(200, _STATION_QUERY)
+        ) as mock_get:
+            client.get_stations(
+                searchstring="Frankfurt", category="1-3", federalstate="hessen", limit=5
+            )
         _, kwargs = mock_get.call_args
         params = kwargs.get("params", {})
         assert params["searchstring"] == "Frankfurt"
@@ -269,7 +297,9 @@ class TestStaDaClientParsing:
         assert params["limit"] == 5
 
     def test_get_stations_omits_none_params(self, client):
-        with patch.object(client._session, "get", return_value=_make_response(200, _STATION_QUERY)) as mock_get:
+        with patch.object(
+            client._session, "get", return_value=_make_response(200, _STATION_QUERY)
+        ) as mock_get:
             client.get_stations(searchstring="Frankfurt")
         _, kwargs = mock_get.call_args
         params = kwargs.get("params", {})
