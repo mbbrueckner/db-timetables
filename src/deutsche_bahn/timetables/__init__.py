@@ -1,6 +1,6 @@
 from importlib.metadata import version
 
-__version__ = version("deutsche-bahn")
+__version__ = version("deutsche-bahn-py")
 
 from .client import TimetablesClient
 from .exceptions import (
