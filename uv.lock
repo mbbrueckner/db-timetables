@@ -78,8 +78,8 @@ wheels = [
 ]
 
 [[package]]
-name = "db-timetables"
-version = "0.1.0"
+name = "deutsche-bahn"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "requests" },
@@ -87,7 +87,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "db-timetables" },
+    { name = "deutsche-bahn" },
     { name = "pytest" },
     { name = "pytest-mock" },
     { name = "python-dotenv" },
@@ -99,7 +99,7 @@ requires-dist = [{ name = "requests", specifier = ">=2.34.0" }]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "db-timetables" },
+    { name = "deutsche-bahn" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "pytest-mock", specifier = ">=3.15.1" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
