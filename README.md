@@ -1,6 +1,6 @@
-# db-timetables
+# deutsche-bahn
 
-A Python library for the [Deutsche Bahn Timetables API](https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables).
+A Python library for the Deutsche Bahn APIs — currently supporting the [Timetables API](https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables) and the [StaDa Station Data API](https://developers.deutschebahn.com/db-api-marketplace/apis/product/stada).
 
 ## Requirements
 
@@ -10,24 +10,26 @@ A Python library for the [Deutsche Bahn Timetables API](https://developers.deuts
 ## Installation
 
 ```bash
-uv add db-timetables
+uv add deutsche-bahn
 ```
 
 Or with pip:
 
 ```bash
-pip install db-timetables
+pip install deutsche-bahn
 ```
 
 ## Setup
 
-1. Register at [developers.deutschebahn.com](https://developers.deutschebahn.com), create an application, and subscribe to the **Timetables** API.
+1. Register at [developers.deutschebahn.com](https://developers.deutschebahn.com), create an application, and subscribe to the APIs you need (**Timetables** and/or **StaDa**).
 2. Copy your **Client ID** and **API Key**.
 
-## Usage
+---
+
+## Timetables API
 
 ```python
-from db_timetables import TimetablesClient
+from deutsche_bahn.timetables import TimetablesClient
 
 client = TimetablesClient(
     client_id="your_client_id",
@@ -73,7 +75,7 @@ for stop in live.stops:
         print(f"{stop.train_line.display_name} is cancelled")
 ```
 
-This is the most useful method - it fetches the plan and all current deviations, then merges them so each stop reflects reality.
+This is the most useful method — it fetches the plan and all current deviations, then merges them so each stop reflects reality.
 
 ### Changes only
 
@@ -85,9 +87,9 @@ changes = client.get_full_changes(eva)
 recent = client.get_recent_changes(eva)
 ```
 
-## Data model
+### Data model
 
-### `TimetableStop`
+#### `TimetableStop`
 
 | Attribute | Type | Description |
 |---|---|---|
@@ -98,7 +100,7 @@ recent = client.get_recent_changes(eva)
 | `messages` | `list[Message]` | Delay/disruption messages |
 | `is_cancelled` | `bool` | True if arrival or departure is cancelled |
 
-### `ArrivalDeparture`
+#### `ArrivalDeparture`
 
 | Attribute | Type | Description |
 |---|---|---|
@@ -113,7 +115,7 @@ recent = client.get_recent_changes(eva)
 | `delay_minutes` | `int \| None` | Difference in minutes, or `None` if on time |
 | `is_cancelled` | `bool` | True if status is cancelled |
 
-### `TrainLine`
+#### `TrainLine`
 
 | Attribute | Type | Description |
 |---|---|---|
@@ -122,7 +124,7 @@ recent = client.get_recent_changes(eva)
 | `owner` | `str` | Operator code |
 | `display_name` | `str` | `"{category} {number}"` (e.g. `"ICE 9551"`) |
 
-### `Station`
+#### `Station`
 
 | Attribute | Type | Description |
 |---|---|---|
@@ -131,28 +133,137 @@ recent = client.get_recent_changes(eva)
 | `ds100` | `str` | DS100 abbreviation |
 | `lat` / `lon` | `float` | Coordinates |
 
+---
+
+## StaDa Station Data API
+
+```python
+from deutsche_bahn.stada import StaDaClient
+
+client = StaDaClient(
+    client_id="your_client_id",
+    api_key="your_api_key",
+)
+```
+
+### Search for stations
+
+```python
+results = client.get_stations(searchstring="Frankfurt")
+# StationQuery(total=12, offset=0, limit=100, result=[...])
+
+for station in results.result:
+    print(station.number, station.name, station.category)
+```
+
+Supports wildcards `*` and `?` in the search string.
+
+### Filter options
+
+```python
+# By federal state
+results = client.get_stations(federalstate="bayern")
+
+# By category range or list
+results = client.get_stations(category="1-3")
+results = client.get_stations(category="1,3,5")
+
+# By EVA number
+results = client.get_stations(eva=8000105)
+
+# By Ril100 identifier
+results = client.get_stations(ril="FF")
+
+# Combine filters with OR logic
+results = client.get_stations(searchstring="Hbf", federalstate="hessen", logicaloperator="or")
+
+# Pagination
+results = client.get_stations(offset=100, limit=50)
+```
+
+### Fetch a single station
+
+```python
+station = client.get_station(1071)  # Bahnhofsnummer
+print(station.result[0].name)       # Frankfurt(Main)Hbf
+```
+
+### 3-S-Zentralen
+
+3-S-Zentralen are the 24/7 operations centres for German railway stations.
+
+```python
+# All 3-S-Zentralen
+szentralen = client.get_szentralen()
+
+# Single entry by ID
+sz = client.get_szentrale(50)
+print(sz.result[0].name, sz.result[0].public_phone_number)
+```
+
+### Data model
+
+#### `StadaStation`
+
+| Attribute | Type | Description |
+|---|---|---|
+| `number` | `int` | Bahnhofsnummer (station ID) |
+| `name` | `str` | Station name |
+| `category` | `int` | Station category (1–7) |
+| `price_category` | `int` | Price category |
+| `federal_state` | `str` | Federal state name |
+| `has_wifi` | `bool` | DB WiFi available |
+| `has_db_lounge` | `bool` | DB Lounge available |
+| `has_travel_center` | `bool` | DB Reisezentrum available |
+| `has_locker_system` | `bool` | Lockers available |
+| `has_parking` | `bool` | Parking available |
+| `has_bicycle_parking` | `bool` | Bicycle parking available |
+| `has_taxi_rank` | `bool` | Taxi rank available |
+| `has_stepless_access` | `str` | `"yes"`, `"no"`, or `"partial"` |
+| `eva_numbers` | `list[EVANumber]` | Associated EVA numbers |
+| `ril100_identifiers` | `list[RiL100Identifier]` | Ril100 codes |
+| `mailing_address` | `Address \| None` | Station mailing address |
+| `szentrale` | `SZentrale \| None` | Responsible 3-S-Zentrale |
+
+#### `SZentrale`
+
+| Attribute | Type | Description |
+|---|---|---|
+| `number` | `int` | Unique ID |
+| `name` | `str` | Name |
+| `public_phone_number` | `str` | Public phone |
+| `email` | `str` | Email address |
+| `address` | `Address \| None` | Physical address |
+
+---
+
 ## Exceptions
+
+All clients share the same exception hierarchy:
 
 | Exception | When |
 |---|---|
 | `AuthenticationError` | Invalid or missing credentials (401/403) |
 | `NotFoundError` | Station or resource not found (404) |
-| `RateLimitError` | Too many requests (429) - free tier allows 60 req/min |
+| `RateLimitError` | Too many requests (429) |
 | `DBApiError` | Any other API or network error |
 
 ```python
-from db_timetables import TimetablesClient, RateLimitError, NotFoundError
+from deutsche_bahn.stada.exceptions import NotFoundError, RateLimitError, DBApiError
 
 try:
-    stations = client.get_station("München")
+    station = client.get_station(9999999)
 except NotFoundError:
-    print("No stations found")
+    print("Station not found")
 except RateLimitError:
-    print("Slow down - rate limit hit")
+    print("Rate limit hit")
+except DBApiError as e:
+    print(f"API error: {e}")
 ```
 
 ## API reference
 
-Full DB API documentation: [developers.deutschebahn.com](https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables)
+- [Timetables API](https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables)
+- [StaDa Station Data API](https://developers.deutschebahn.com/db-api-marketplace/apis/product/stada)
 
 Data is provided under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
